@@ -11,11 +11,23 @@ var isSmartPhone = false;  // trueでスマホ
 var LINKS = [
     'http://www.yahoo.co.jp/',
     'http://www.google.co.jp/',
-    'http://www.msn.com'
+    'http://www.msn.com/'
+    // Basic認証を直接含めてもOK http://userName:password@example.jp
 ];
 
 
 var casper = require('casper').create();
+
+/* Basic認証を通す場合はcreate()メソッドにオプションを渡しても良い */
+/*
+    .create({
+        pageSettings: {
+            userName: 'userName',
+            password: 'password'
+        }
+    });
+*/
+
 
 /* キャプチャ処理 */
 casper.start().each(LINKS, function(self, link) {
