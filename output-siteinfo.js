@@ -1,12 +1,9 @@
 /********************************************
- * 指定したページの特定の情報をテキストファイルに出力する
+ * 指定したページの特定の情報をcsvに出力する
  ********************************************/
+var fs = require('fs');
 
-var data = ['url', 'title'];
-
-
-
-/* ページのURLを設定 */
+/* ページURLを設定 */
 var LINKS = [
     'http://www.yahoo.co.jp/',
     'http://www.google.co.jp/',
@@ -14,54 +11,46 @@ var LINKS = [
     // Basic認証を直接含めてもOK http://userName:password@example.jp
 ];
 
-/* URLの数だけdataの多次元配列をコピーする */
-function createData() {
+/* データを格納する多次元配列を作成する */
+/* 2番目の配列には以下を格納 */
+/*
+ data[i][0] = url
+ data[i][1] = title
+*/
+var data = (function() {
     var arr = [];
-    var i   = 0;
-    var l   = LINKS.length;
-    for (; i < l; i++) {
-        arr[i] = JSON.stringify(data);
+    var i = 0;
+    var j = 0;
+    var l = LINKS.length;
+
+    for ( i = 0; i < l; i++) {
+        arr[i] = [];
+        for( j = 0; j < 3; j++) {
+            arr[i][j] = '';
+        }
     }
     return arr;
-}
-
-var newData = createData();  // この段階だとJSON.stringifyが効いているため後で戻す
+})();
 
 
-
-
-
+/* casper処理 */
 var casper = require('casper').create();
-
-
-/* キャプチャ処理 */
 casper.start().each(LINKS, function(self, link, i) {
 
-    newData[i] = JSON.parse(newData[i]);
-    newData[i][0] = link;
-
+    data[i][0] = link;
 
     /* 連続実行 */
     self
         /* 指定urlを開く */
         .thenOpen(link, function () {
-            newData[i][1] = this.getTitle();
+            data[i][1] = this.getTitle() || '';
         })
 
         /* 読み込んだら */
         .then(function() {
-            // self.capture('capture_img/' + title + '.png');
-            var fs = require('fs');
-            fs.write('output.txt', newData[i]);
+            fs.write('output.csv', data.join('\n'));
         })
     ;
 });
 
-
-console.log(newData);
-
 casper.run();
-
-
-
-
