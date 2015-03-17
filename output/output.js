@@ -2,7 +2,7 @@
  * 指定したページの特定の情報をcsvに出力する
  ********************************************/
 var fs   = require('fs');
-var json = require('./output_file/src.json');  // URLが配列形式で記載されたファイルを読み込む
+var json = require('./files/src.json');  // URLが配列形式で記載されたファイルを読み込む
 
 
 /* データを格納する多次元配列を作成する */
@@ -30,7 +30,7 @@ var data = (function() {
 
 /* casperの定義 */
 /* ローカルにあるjQueryを実行できるように */
-var casper = require('casper').create({clientScripts: ['jquery-1.11.2.min.js']});
+var casper = require('casper').create({clientScripts: ['../jquery-1.11.2.min.js']});
 
 /** 
  * casperのループ実行
@@ -71,7 +71,7 @@ casper.start().each(json, function(self, link, i) {
         /* 読み込んだらcsvファイルに書き込む */
         .then(function() {
             /* ファイルはutf-8なので、必要に応じてツールで文字コード変換を行う */
-            fs.write('./output_file/output.csv', data.join('\n'));
+            fs.write('./files/output.csv', data.join('\n'));
         })
     ;
 });
